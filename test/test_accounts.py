@@ -3,24 +3,36 @@ import httplib, urllib, json
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 
-def init_accounts():
-    t = token('uk__21')
-    settings = get_settings('uk__21')
+def init_accounts(bbug_company_id = 'uk__21'):
+    t = token(bbug_company_id)
+    settings = get_settings(bbug_company_id)
     return Accounts(t,settings)
 
 def test_all_accounts_status():
     accounts = init_accounts()
-    r = accounts.query()
-    assert r.status == 200
+    accounts.query()
+    assert accounts.response.status == 200
 
 def test_accounts_data():
     accounts = init_accounts()
-    r = accounts.query()
-    assert len(accounts.process_response(r)) > 1
+    accounts.query()
+    assert len(accounts.process_response()) > 1
 
 def test_accounts_query():
     accounts = init_accounts()
     date_after_month = datetime.today() + relativedelta(months=1)
-    r = accounts.query({ '$filter': 'modifiedon gt ' +
+    accounts.query({ '$filter': 'modifiedon gt ' +
                         date_after_month.strftime('%Y-%m-%d') })
-    assert len(accounts.process_response(r)) == 0
+    assert len(accounts.process_response()) == 0
+
+def test_acounts_update():
+    accounts = init_accounts('test')
+    accounts.update()
+    total_test_accounts = len(accounts.data['value'])
+    assert  total_test_accounts > 1
+    accounts2 = init_accounts()
+    accounts2.update()
+
+    total_uk__21_accounts = len(accounts2.data['value'])
+    assert total_test_accounts > total_uk__21_accounts
+
