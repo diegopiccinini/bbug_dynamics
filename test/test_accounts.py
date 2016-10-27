@@ -16,17 +16,11 @@ def test_all_accounts_status():
 def test_accounts_data():
     accounts = init_accounts()
     r = accounts.query()
-    data = r.read()
-    data = json.loads(data)
-    assert "value" in data
-    assert len(data['value']) > 1
+    assert len(accounts.process_response(r)) > 1
 
 def test_accounts_query():
     accounts = init_accounts()
     date_after_month = datetime.today() + relativedelta(months=1)
     r = accounts.query({ '$filter': 'modifiedon gt ' +
                         date_after_month.strftime('%Y-%m-%d') })
-    data = r.read()
-    data = json.loads(data)
-    assert "value" in data
-    assert len(data['value']) == 0
+    assert len(accounts.process_response(r)) == 0
