@@ -25,11 +25,48 @@ class Bbug():
         self.headers = headers
 
 
-    def update_client(self,account):
-        headers=self.headers
-        headers['content-type']='application/json; charset=utf-8'
+    def save_client(self,account):
+        self.headers['content-type']='application/json; charset=utf-8'
         self.response = requests.request("GET",self.url + '/client/find_by_ref/' + account['accountid'],
-                             headers=headers )
+                             headers=self.headers )
+        client = {
+            'last_name': account["name"],
+            'email': account["emailaddress1"],
+            'mobile': account["telephone1"],
+            'address1': self.address1(account),
+            'postcode': account["address1_postalcode"],
+            'join_date': account["opendeals_date"],
+            'country': account["address1_country"]
+            }
 
+        data = json.loads(self.response.text)
+
+        if self.response.status_code == 200:
+            self.update_client(client,data['id'])
+        elif self.response.status_code == 404:
+            self.create_client(client,account['accountid'])
+
+    def create_client(self, client,accountid):
+        client['reference']=accountid
+        client['member_type']= 2
+        client['send_email']="false"
+        client['member_level_id']= 0
+        url = self.url + '/client'
+        self.bbug_response = requests.request("POST", url, data=json.dumps(client),
+                                         headers=self.headers)
+
+    def update_client(self, client,clientid):
+        url = self.url + '/client/' + `clientid`
+        self.bbug_response = requests.request("PUT", url, data=json.dumps(client),
+                                         headers=self.headers)
+
+    def address1(self,account):
+        address = account['address1_line1']
+        if isinstance(account['address1_city'], basestring) :
+            address+= ", " + account['address1_city']
+
+        if 'address1_stateprovince' in account.keys() :
+            address+= ", " + account['address1_stateprovince']
+        return address
 
 
