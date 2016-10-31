@@ -1,5 +1,6 @@
 import boto3, json
 from .dynamics import Dynamics
+from boto3.dynamodb.conditions import Key, Attr
 
 class Accounts(Dynamics):
 
@@ -35,3 +36,9 @@ class Accounts(Dynamics):
         # get all accounts modifiedon after the latest update
         self.query({'$filter': 'modifiedon gt ' + modifiedon })
         self.data=json.loads(self.response.read())
+
+    def get_from_dynamo(self):
+        dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
+        table = dynamodb.Table('dynamics_accounts')
+        response=table.query( KeyConditionExpression= Key('bbug_company_id').eq( self.bbug_company_id))
+        return response['Items']
