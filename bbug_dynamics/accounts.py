@@ -1,6 +1,8 @@
-import boto3, json
+import json
 from .dynamics import Dynamics
+from .bbug import Bbug
 from boto3.dynamodb.conditions import Key, Attr
+from decimal import *
 
 class Accounts(Dynamics):
 
@@ -19,14 +21,15 @@ class Accounts(Dynamics):
             force a modifiedon date.
         """
         # get in dynamo the date of latest update
-        client = boto3.client('dynamodb')
-        last_update=client.get_item(TableName='dynamics_accounts_greather_modifiedon',
-                                    Key={ 'bbug_company_id':  { 'S': self.bbug_company_id }
-                                        }
-                                   )
-        if 'Item' in last_update:
-            modifiedon=last_update['Item']['modifiedon']['S']
-        else:
+        table_modifiedon = self.dynamodb.Table('dynamics_accounts_greather_modifiedon')
+
+        try:
+            last_update=table_modifiedon.get_item( Key={ 'bbug_company_id':
+                                                        self.bbug_company_id })
+
+            modifiedon=last_update['Item']['modifiedon']
+
+        except:
             modifiedon='2000-01-01'
 
         # update all accounts greather than a param_modifiedon
@@ -37,9 +40,20 @@ class Accounts(Dynamics):
         self.query({'$filter': 'modifiedon gt ' + modifiedon })
         self.data=json.loads(self.response.read())
 
+        table=self.dynamodb.Table('dynamics_accounts')
+
+        for account in self.data['value']:
+            account['bbug_company_id']=self.bbug_company_id
+            for k in account.keys():
+                if isinstance(account[k] , float):
+                    account[k]=Decimal(str(account[k]))
+            table.put_item(Item=account)
+            if modifiedon < account['modifiedon']:
+                modifiedon=account['modifiedon']
+        table_modifiedon.put_item(Item={ 'bbug_company_id': self.bbug_company_id, 'modifiedon': modifiedon})
+
     def get_from_dynamo(self, limit = 100 ):
-        dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
-        table = dynamodb.Table('dynamics_accounts')
+        table = self.dynamodb.Table('dynamics_accounts')
         response=table.query( KeyConditionExpression=
                              Key('bbug_company_id').eq(
                                  self.bbug_company_id), Limit=limit)

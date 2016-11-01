@@ -1,4 +1,4 @@
-import httplib, urllib, json
+import httplib, urllib, json, boto3
 from io import StringIO
 
 class Dynamics:
@@ -7,6 +7,7 @@ class Dynamics:
         settings = settings['Item']['dynamics']['M']
         self._token= token
         self._settings=settings
+        self.dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
 
     def query(self, params={}):
         params = urllib.urlencode(params)

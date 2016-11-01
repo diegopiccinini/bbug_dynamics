@@ -24,11 +24,18 @@ class Bbug():
         headers['auth-token']= data['auth_token']
         self.headers = headers
 
+    def get_client(self, accountid):
+        self.headers['content-type']='application/json; charset=utf-8'
+        self.response = requests.request("GET",self.url +
+                                         '/client/find_by_ref/' + accountid, headers=self.headers )
+        if self.response.status_code ==200:
+            data= json.loads(self.response.text)
+        else:
+            data= {}
+        return data
 
     def save_client(self,account):
-        self.headers['content-type']='application/json; charset=utf-8'
-        self.response = requests.request("GET",self.url + '/client/find_by_ref/' + account['accountid'],
-                             headers=self.headers )
+
         client = {
             'last_name': account["name"],
             'email': account["emailaddress1"],
@@ -39,8 +46,7 @@ class Bbug():
             'country': account["address1_country"]
             }
 
-        data = json.loads(self.response.text)
-
+        data = self.get_client(account['accountid'])
         if self.response.status_code == 200:
             self.update_client(client,data['id'])
         elif self.response.status_code == 404:
