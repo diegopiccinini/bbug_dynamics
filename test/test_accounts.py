@@ -36,3 +36,8 @@ def test_acounts_update():
     total_uk__21_accounts = len(accounts2.data['value'])
     assert total_test_accounts > total_uk__21_accounts
 
+def test_accounts_get_from_dynamo():
+    accounts = init_accounts()
+    first_dynamo_account = accounts.get_from_dynamo(limit=1)
+    assert len(first_dynamo_account) == 1
+

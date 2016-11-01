@@ -37,8 +37,10 @@ class Accounts(Dynamics):
         self.query({'$filter': 'modifiedon gt ' + modifiedon })
         self.data=json.loads(self.response.read())
 
-    def get_from_dynamo(self):
+    def get_from_dynamo(self, limit = 100 ):
         dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
         table = dynamodb.Table('dynamics_accounts')
-        response=table.query( KeyConditionExpression= Key('bbug_company_id').eq( self.bbug_company_id))
+        response=table.query( KeyConditionExpression=
+                             Key('bbug_company_id').eq(
+                                 self.bbug_company_id), Limit=limit)
         return response['Items']
