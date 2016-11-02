@@ -3,19 +3,19 @@ import urlparse, requests, json
 class Bbug():
     def __init__(self, settings):
 
-        bbug_ids = settings['Item']['bbug_company_id']['S'].split('__')
+        bbug_ids = settings['Item']['bbug_company_id'].split('__')
         self.company_id=bbug_ids[1]
-        settings=settings['Item']['bbug_app']['M']
+        settings=settings['Item']['bbug_app']
 
-        url = settings['admin_endpoint']['S'] +  '/login/admin/'+ self.company_id
-        self.url = settings['admin_endpoint']['S'] +  '/admin/'+ self.company_id
+        url = settings['admin_endpoint'] +  '/login/admin/'+ self.company_id
+        self.url = settings['admin_endpoint'] +  '/admin/'+ self.company_id
 
 
-        payload = "-----011000010111000001101001\r\nContent-Disposition: form-data; name=\"email\"\r\n\r\n" +  settings['email']['S'] + "\r\n-----011000010111000001101001\r\n Content-Disposition: form-data; name=\"password\"\r\n\r\n" + settings['password']['S'] + "\r\n-----011000010111000001101001--"
+        payload = "-----011000010111000001101001\r\nContent-Disposition: form-data; name=\"email\"\r\n\r\n" +  settings['email'] + "\r\n-----011000010111000001101001\r\n Content-Disposition: form-data; name=\"password\"\r\n\r\n" + settings['password'] + "\r\n-----011000010111000001101001--"
 
         headers = {
                    'content-type': "multipart/form-data; boundary=---011000010111000001101001",
-                    'App-Id': settings['app_id']['S'],
+                    'App-Id': settings['app_id'],
                     'cache-control': "no-cache"
                     }
 

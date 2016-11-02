@@ -6,9 +6,17 @@ from decimal import *
 
 class Accounts(Dynamics):
 
+    def __init__(self,settings):
+        Dynamics.__init__(self,settings)
+        self.table=self.dynamodb.Table('dynamics_accounts')
+
     def base_uri(self):
         return '/accounts'
 
+    def save(self,account):
+        self.table.put_item(Item=account)
+        self.messages.append("Account " + account['name'] +
+                             " was saved in dynamodb.")
 
     def get_from_dynamics(self, param_modifiedon=''):
         """Get all the accounts with modifiedon greather than the latest
@@ -38,6 +46,21 @@ class Accounts(Dynamics):
         self.query({'$filter': 'modifiedon gt ' + modifiedon })
         self.data=json.loads(self.response.read())
 
+
+        for account in self.data['value']:
+            account['bbug_company_id']=self.bbug_company_id
+            for k in account.keys():
+                if isinstance(account[k] , float):
+                    account[k]=Decimal(str(account[k]))
+            self.save(account)
+        return self.get_messages()
+
+    def get_messages(self):
+        """Get messages and clean the messages instance variable
+        """
+        messages = self.messages
+        self.messages=[]
+        return messages
 
     def get_from_dynamo(self, limit = 100 ):
         table = self.dynamodb.Table('dynamics_accounts')

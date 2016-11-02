@@ -1,8 +1,8 @@
-from bbug_dynamics import get_settings, Bbug
+from bbug_dynamics import Bbug, Settings
 from test_accounts import init_accounts
 
 def init_bbug(bbug_company_id = 'uk__21'):
-    settings = get_settings(bbug_company_id)
+    settings = Settings(bbug_company_id).settings
     return Bbug(settings)
 
 def test_init():

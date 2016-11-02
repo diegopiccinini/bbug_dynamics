@@ -1,12 +1,11 @@
-from bbug_dynamics import token, get_settings, Accounts
+from bbug_dynamics import Settings, Accounts, Dynamics
 import httplib, urllib, json, boto3
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 
 def init_accounts(bbug_company_id = 'uk__21'):
-    t = token(bbug_company_id)
-    settings = get_settings(bbug_company_id)
-    return Accounts(t,settings)
+    settings= Settings(bbug_company_id).settings
+    return Accounts(settings)
 
 def test_all_accounts_status():
     accounts = init_accounts()
