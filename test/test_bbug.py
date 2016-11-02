@@ -7,7 +7,7 @@ def init_bbug(bbug_company_id = 'uk__21'):
 
 def test_init():
     bbug =init_bbug()
-    assert(bbug.respolsnse.status_code == 201)
+    assert(bbug.response.status_code == 201)
 
 def test_save_client():
     accounts = init_accounts('localhost__37000')
@@ -20,7 +20,7 @@ def test_save_client():
         assert(bbug.bbug_response.status_code in [200,404])
 
 def test_client_fields():
-    accounts = init_accounts('localhost_37000')
+    accounts = init_accounts('localhost__37000')
     accounts_from_dynamo = accounts.get_from_dynamo(limit=30)
     bbug =init_bbug()
     for account in accounts_from_dynamo:

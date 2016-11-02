@@ -10,8 +10,8 @@ class Accounts(Dynamics):
         return '/accounts'
 
 
-    def update(self, param_modifiedon=''):
-        """Update all the accounts with modifiedon greather than the latest
+    def get_from_dynamics(self, param_modifiedon=''):
+        """Get all the accounts with modifiedon greather than the latest
         modifiedon updated account. To change the defuault filter can use the
         param_modfiedon.
 
@@ -26,9 +26,7 @@ class Accounts(Dynamics):
         try:
             last_update=table_modifiedon.get_item( Key={ 'bbug_company_id':
                                                         self.bbug_company_id })
-
             modifiedon=last_update['Item']['modifiedon']
-
         except:
             modifiedon='2000-01-01'
 
@@ -40,17 +38,6 @@ class Accounts(Dynamics):
         self.query({'$filter': 'modifiedon gt ' + modifiedon })
         self.data=json.loads(self.response.read())
 
-        table=self.dynamodb.Table('dynamics_accounts')
-
-        for account in self.data['value']:
-            account['bbug_company_id']=self.bbug_company_id
-            for k in account.keys():
-                if isinstance(account[k] , float):
-                    account[k]=Decimal(str(account[k]))
-            table.put_item(Item=account)
-            if modifiedon < account['modifiedon']:
-                modifiedon=account['modifiedon']
-        table_modifiedon.put_item(Item={ 'bbug_company_id': self.bbug_company_id, 'modifiedon': modifiedon})
 
     def get_from_dynamo(self, limit = 100 ):
         table = self.dynamodb.Table('dynamics_accounts')
