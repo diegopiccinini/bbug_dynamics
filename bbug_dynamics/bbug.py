@@ -47,10 +47,16 @@ class Bbug():
             }
 
         data = self.get_client(account['accountid'])
+
         if self.response.status_code == 200:
             self.update_client(client,data['id'])
+            message = 'updated client: '
         elif self.response.status_code == 404:
             self.create_client(client,account['accountid'])
+            message = 'created client: '
+        else:
+            message="error to update account: "
+        return [message + account['name']]
 
     def create_client(self, client,accountid):
         client['reference']=accountid

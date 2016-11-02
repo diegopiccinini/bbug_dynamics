@@ -31,14 +31,16 @@ def test_acounts_get_from_dynamics():
                                     '2010-01-01'})
 
     accounts = init_accounts('test')
-    accounts.get_from_dynamics()
+    messages = accounts.get_from_dynamics()
     total_test = len(accounts.data['value'])
     assert  total_test > 1
+    assert len(messages) > 1
     accounts2 = init_accounts('localhost__37000')
-    accounts2.get_from_dynamics()
+    messages2 = accounts2.get_from_dynamics()
 
     total_local = len(accounts2.data['value'])
     assert total_test > total_local
+    assert len(messages)>len(messages2)
 
 def test_accounts_get_from_dynamo():
     accounts = init_accounts()
