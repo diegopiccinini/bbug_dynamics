@@ -63,8 +63,10 @@ class Accounts(Dynamics):
         return messages
 
     def get_from_dynamo(self, limit = 100 ):
-        table = self.dynamodb.Table('dynamics_accounts')
-        response=table.query( KeyConditionExpression=
-                             Key('bbug_company_id').eq(
-                                 self.bbug_company_id), Limit=limit)
+        response=self.table.query( KeyConditionExpression= Key('bbug_company_id').eq( self.bbug_company_id), Limit=limit)
+        return response['Items']
+
+    def to_update(self):
+        response=self.table.query( KeyConditionExpression= Key('bbug_company_id').eq( self.bbug_company_id),
+                                 FilterExpression='attribute_not_exists(bbug_updated_at)')
         return response['Items']

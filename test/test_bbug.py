@@ -58,8 +58,10 @@ def test_client_fields():
             assert client['postcode'] == account["address1_postalcode"]
         else:
             assert  account["address1_postalcode"] == None
-        if 'join_date' in client.keys():
-             print "join_date:" + client['join_date']
+#
+# In bookinbug is not saved I don't know why this field in the api
+#        if 'join_date' in client.keys():
+#             print "join_date:" + client['join_date']
 #            assert client['join_date'] == account["opendeals_date"][0:30]
 #        else:
 #            assert account["opendeals_date"] == None

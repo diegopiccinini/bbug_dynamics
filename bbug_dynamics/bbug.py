@@ -7,7 +7,7 @@ class Bbug():
         self.company_id=bbug_ids[1]
         settings=settings['Item']['bbug_app']
 
-        url = settings['admin_endpoint'] +  '/login/admin/'+ self.company_id
+        url = settings['admin_endpoint'] +  '/login/admin'
         self.url = settings['admin_endpoint'] +  '/admin/'+ self.company_id
 
 
@@ -55,7 +55,8 @@ class Bbug():
             self.create_client(client,account['accountid'])
             message = 'created client: '
         else:
-            message="error to update account: "
+            raise RuntimeError("error to update account " +
+                               account['accountid'])
         return [message + account['name']]
 
     def create_client(self, client,accountid):
@@ -80,5 +81,6 @@ class Bbug():
         if 'address1_stateprovince' in account.keys() :
             address+= ", " + account['address1_stateprovince']
         return address
+
 
 

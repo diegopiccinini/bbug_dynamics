@@ -47,3 +47,9 @@ def test_accounts_get_from_dynamo():
     first_dynamo_account = accounts.get_from_dynamo(limit=1)
     assert len(first_dynamo_account) == 1
 
+def test_to_update():
+    accounts = init_accounts('test')
+    test_to_update = accounts.to_update()
+    assert len(test_to_update)>1
+    accounts = init_accounts('uk__21')
+    assert len(accounts.to_update())< test_to_update
