@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name='bbug_dynamics',
-    version='0.1',
+    version='0.1.1',
     description='Bookingbug Dynamics CRM Integration',
     url='git@github.com:BookingBug/bbug_dynamics.git',
     author='Diego Piccinini Lagos',
